@@ -1,0 +1,57 @@
+.log-content {
+    width: 100%;
+    display: flex;
+    padding-top: 2%;
+    text-align: center;
+}
+
+.owner {
+    width: 10%;
+    margin-left: 1%;
+}
+
+.date-time {
+    width: 10%;
+    margin-left: 0%;
+}
+
+.search-input {
+    width: 60%;
+    margin-left: 1%;
+}
+
+.deep-mode {
+    padding: 0.3%;
+}
+.share {
+    padding: 0.3%;
+}
+
+.result-content {
+    width: 100%;
+    text-align: center;
+    font-size: 15px;
+}
+
+.result-header-line {
+    font-weight: bold;
+    width: 100%;
+    color: aliceblue;
+    height: 25px;
+    margin-bottom: 5px;
+}
+
+.result-item-line {
+    width: 100%;
+    height: 25px;
+    display: inline;
+    margin-bottom: 1px;
+}
+
+.error {
+    color: #f03774;
+}
+
+.hide{
+    display: none;
+}
