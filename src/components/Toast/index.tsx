@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Snackbar from '@mui/material/Snackbar';
-import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import MuiAlert, { AlertColor, AlertProps } from '@mui/material/Alert';
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
@@ -18,10 +18,10 @@ interface Toast {
   open: boolean;
   onCloseFunc: OnClose;
   time?: number;
-  type?: 'success' | 'info' | 'warning' | 'error';
+  type?: AlertColor;
 }
 
-export default ({ open, text, onCloseFunc, type = 'success', time = 2 }: Toast) => {
+const ToastElement = ({ open, text, onCloseFunc, type = 'success', time = 2 }: Toast): React.ReactElement => {
 
   return (
     <Snackbar
@@ -37,3 +37,5 @@ export default ({ open, text, onCloseFunc, type = 'success', time = 2 }: Toast) 
     </Snackbar >
   );
 }
+
+export default ToastElement;
