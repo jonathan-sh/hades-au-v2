@@ -111,10 +111,10 @@ function App() {
               color='primary'
               aria-label='share'
               onClick={() => {
-                if(query !==''){
+                if (query !== '') {
                   setRefreshSearch(!refreshSearch);
                 }
-                else{
+                else {
                   setToastType('error');
                   setToastText('empty query');
                   setToast(true);
@@ -132,7 +132,8 @@ function App() {
               aria-label='share'
               onClick={() => {
                 const base = window.location.href.split('?')[0];
-                let url = `${base}?q=${search.replace(/ = /g, ':-:')}`
+                let funQuery = search.replace(/ = /g, ':-:').replace(/ /g, '%20');
+                let url = `${base}?q=${funQuery}`;
                 if (owner && owner !== '') {
                   url = `${url}&o=${owner}`;
                 }
