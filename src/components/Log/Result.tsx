@@ -85,7 +85,6 @@ export default function Result({ query, faces, attributes, refreshSearch, setQue
               </TableHead>
               <TableBody>
                 {results
-                  .sort((a: HadesResult, b: HadesResult): number => (a.utc_date_time_millisecond < b.utc_date_time_millisecond) ? -1 : ((b.utc_date_time_millisecond > a.utc_date_time_millisecond) ? 1 : 0))
                   .map((result: HadesResult) => (
                     <TableRow
                       key={result.mid}
