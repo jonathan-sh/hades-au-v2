@@ -23,7 +23,7 @@ function App() {
   const [attributes, setAttributes] = useState('utc_date_time_iso,owner,log_type,tracker,origin,message');
   const [owner, setOwner] = useState('');
   const [ownerList, setOwnerList] = useState<OwnerInfo[]>([]);
-  const [aliceMode, setAliceMode] = useState(false);
+  const [deepMode, setDeepMode] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
   const [toast, setToast] = useState(false);
   const [toastText, setToastText] = useState('');
@@ -39,6 +39,10 @@ function App() {
       setSearch(q.replace(/:-:/g, ' = '));
     }
     if (params.get('a')) setAttributes(`${params.get('a')}`);
+    if (params.get('m')){
+      const isDeepMode = params.get('m')?.toLocaleLowerCase() === 'd';
+      setDeepMode(isDeepMode);
+    }
 
     const getOwners: AxiosRequestConfig = {
       method: 'GET',
@@ -94,14 +98,12 @@ function App() {
           <TextField
             autoFocus={true}
             placeholder='what are you looking for?'
-            label='to write query you can use literal string or operator like [ "OR", "AND", "<", ">"]'
+            label={deepMode ? 'write a json filter' : 'you can use literal string or operators like [ "OR", "AND", "<", ">"]'}
             value={search}
             fullWidth={true}
+            multiline={deepMode}
             onChange={({ target }) => {
               setSearch(target.value);
-              if (search.length === 1 && owner) {
-                setSearch(`owner = ${owner}`)
-              }
             }} />
         </div>
 
@@ -137,6 +139,9 @@ function App() {
                 if (owner && owner !== '') {
                   url = `${url}&o=${owner}`;
                 }
+                if (deepMode) {
+                  url = `${url}&m=d`;
+                }
                 navigator.clipboard.writeText(url);
                 setToastType('success');
                 setToastText('link copied!');
@@ -163,10 +168,9 @@ function App() {
           <div className='deep-mode'>
 
             <Switch
-              checked={aliceMode}
+              checked={deepMode}
               onChange={() => {
-                setAliceMode(!aliceMode);
-                alert('🚧 Not works yet. 🚧\nPlease check the issue number 5');
+                setDeepMode(!deepMode);
               }}
               inputProps={{ 'aria-label': 'controlled' }} />
             <span>deep mode</span>
@@ -176,6 +180,7 @@ function App() {
       <Toast open={toast} text={toastText} type={toastType} onCloseFunc={(): void => { setToast(false) }} />
       <Result
         query={query}
+        deepMode={deepMode}
         faces={faces}
         attributes={attributes}
         refreshSearch={refreshSearch}

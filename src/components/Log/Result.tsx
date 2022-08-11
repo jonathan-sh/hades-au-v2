@@ -8,10 +8,12 @@ import TableRow from '@mui/material/TableRow';
 import Tooltip from '@mui/material/Tooltip';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
+import { AlertColor } from '@mui/material';
 import LinearProgress from '@mui/material/LinearProgress';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
 import './style.css';
+import Toast from '../Toast';
 export interface HadesResult {
   [key: string]: string
 }
@@ -31,25 +33,32 @@ interface Search {
   query: string;
   faces: string;
   attributes: string;
+  deepMode: boolean;
   refreshSearch: boolean;
   setQuery: SetQuery;
 }
-export default function Result({ query, faces, attributes, refreshSearch, setQuery }: Search) {
+export default function Result({ query, faces, attributes, refreshSearch, setQuery, deepMode }: Search) {
   const initResult: HadesResult[] = [];
   const [results, setResult] = useState(initResult);
   const [inRequestProgress, setInRequestProgress] = useState(false);
+  const [toast, setToast] = useState(false);
+  const [toastText, setToastText] = useState('');
+  const [toastType, setToastType] = useState<AlertColor>('success');
   useEffect(() => {
-    if (query === '') {
+    if (!query || query === '') {
       setResult([]);
       setInRequestProgress(false);
     }
     if (query && query !== '') {
       setInRequestProgress(true);
+      const mileUrl: string = 'https://api-usa.saas-solinftec.com/hades-api/logs';
+      const mongoUrl: string = 'https://api-usa.saas-solinftec.com/hades-api/db';
+
       const config: AxiosRequestConfig = {
         method: 'post',
-        url: 'https://api-usa.saas-solinftec.com/hades-api/logs',
+        url: deepMode ? mongoUrl : mileUrl,
         headers: { 'Content-Type': 'application/json' },
-        data: JSON.stringify({ query })
+        data: deepMode ? query : JSON.stringify({ query })
       };
 
       axios(config)
@@ -57,11 +66,28 @@ export default function Result({ query, faces, attributes, refreshSearch, setQue
           setResult(response.data);
           setInRequestProgress(false);
         })
+        .catch((e: Error): void => {
+          setResult([]);
+          setToastType('error');
+          setToastText(e.message);
+          setToast(true);
+
+          if (e.message.includes('400')) {
+            setTimeout(() => {
+              setToastType('error');
+              setToastText('check the schema');
+              setToast(true);
+            }, 1000);
+          }
+
+          setInRequestProgress(false);
+        });
     }
-  }, [query, refreshSearch])
+  }, [query, refreshSearch, deepMode])
 
   return (
     <div className='result-content'>
+      <Toast open={toast} text={toastText} type={toastType} onCloseFunc={(): void => { setToast(false) }} />
       <br />
       <Box sx={{ width: '100%' }} className={inRequestProgress ? '' : 'hide'}>
         <LinearProgress />
@@ -77,17 +103,21 @@ export default function Result({ query, faces, attributes, refreshSearch, setQue
                 <TableRow>
                   {
                     faces.split(',')
-                      .map((it: string) => (
-                        <TableCell key={it} align='left' style={{ fontWeight: 'bold', color: 'rgb(1, 255, 112' }} > {it.toUpperCase()}</TableCell>
+                      .map((it: string, index: number) => (
+                        <TableCell
+                          key={index}
+                          align='left'
+                          style={{ fontWeight: 'bold', color: 'rgb(1, 255, 112' }}> {it.toUpperCase()}
+                        </TableCell>
                       ))
                   }
                 </TableRow>
               </TableHead>
               <TableBody>
                 {results
-                  .map((result: HadesResult) => (
+                  .map((result: HadesResult, index: number) => (
                     <TableRow
-                      key={result.mid}
+                      key={index}
                       sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                     >
                       {
@@ -104,7 +134,7 @@ export default function Result({ query, faces, attributes, refreshSearch, setQue
                                   style={{ ...isError, width: '150px' }}>{value.split('.')[0]}</TableCell>
                               ),
                               tracker: () => (
-                                <Tooltip title='find by tracker id'>
+                                <Tooltip key={index} title='find by tracker id'>
                                   <TableCell key={index} onClick={() => {
                                     setQuery(`tracker = ${value}`);
                                   }} align='left' style={{ ...isError, width: '280px', cursor: 'pointer' }}>{value}</TableCell>
