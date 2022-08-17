@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDebounce } from 'use-debounce';
-import { TextField, Switch, IconButton, Tooltip, AlertColor } from '@mui/material';
+import { TextField, Switch, IconButton, Tooltip, AlertColor, Button } from '@mui/material';
 import Share from '@mui/icons-material/FileUploadOutlined';
 import Search from '@mui/icons-material/SearchOutlined';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
@@ -19,6 +19,7 @@ function App() {
   const [faces, setFaces] = useState('date time,owner,type,tracker,origin,message');
   const [attributes, setAttributes] = useState('utc_date_time_iso,owner,log_type,tracker,origin,message');
   const [deepMode, setDeepMode] = useState(false);
+  const [sort, setSort] = useState('desc');
   const [startDate, setStartDate] = useState(new Date());
   const [toast, setToast] = useState(false);
   const [toastText, setToastText] = useState('');
@@ -63,6 +64,7 @@ function App() {
   return (
     <div>
       <div className='log-content'>
+
         <div className='search-input'>
           <TextField
             autoFocus={true}
@@ -141,6 +143,20 @@ function App() {
             </IconButton>
           </div>
         </Tooltip>
+        <div className='sort'>
+          <div className='asc'>
+            <Button
+              fullWidth={true}
+              variant={sort === 'asc' ? 'contained' : 'outlined'}
+              onClick={() => { setSort('asc') }}>ASC</Button>
+          </div>
+          <div className='desc'>
+            <Button
+              fullWidth={true}
+              variant={sort === 'desc' ? 'contained' : 'outlined'}
+              onClick={() => { setSort('desc') }}>DESC</Button>
+          </div>
+        </div>
         <div className='date-time hide'>
           <LocalizationProvider dateAdapter={AdapterMoment}>
             <DatePicker
@@ -170,6 +186,7 @@ function App() {
       <Toast open={toast} text={toastText} type={toastType} onCloseFunc={(): void => { setToast(false) }} />
       <Result
         query={query}
+        sort={sort}
         deepMode={deepMode}
         faces={faces}
         attributes={attributes}

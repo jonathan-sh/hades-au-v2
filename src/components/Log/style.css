@@ -10,6 +10,21 @@
     margin-left: 1%;
 }
 
+.sort {
+    width: 10%;
+    margin-left: 1%;
+    margin-top: 0.3%;
+}
+
+.asc {
+    width: 48%;
+    float: left;
+}
+.desc {
+    width: 48%;
+    float: left;
+}
+
 .date-time {
     width: 10%;
     margin-left: 0%;

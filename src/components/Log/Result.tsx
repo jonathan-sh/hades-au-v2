@@ -31,13 +31,14 @@ interface SourceTreatment {
 
 interface Search {
   query: string;
+  sort: string;
   faces: string;
   attributes: string;
   deepMode: boolean;
   refreshSearch: boolean;
   setQuery: SetQuery;
 }
-export default function Result({ query, faces, attributes, refreshSearch, setQuery, deepMode }: Search) {
+export default function Result({ query, faces, attributes, sort, refreshSearch, setQuery, deepMode }: Search) {
   const initResult: HadesResult[] = [];
   const [results, setResult] = useState(initResult);
   const [inRequestProgress, setInRequestProgress] = useState(false);
@@ -58,7 +59,7 @@ export default function Result({ query, faces, attributes, refreshSearch, setQue
         method: 'post',
         url: deepMode ? mongoUrl : mileUrl,
         headers: { 'Content-Type': 'application/json' },
-        data: deepMode ? query : JSON.stringify({ query })
+        data: deepMode ? query : JSON.stringify({ query, sort })
       };
 
       axios(config)
@@ -83,7 +84,7 @@ export default function Result({ query, faces, attributes, refreshSearch, setQue
           setInRequestProgress(false);
         });
     }
-  }, [query, refreshSearch, deepMode])
+  }, [query, refreshSearch, deepMode, sort])
 
   return (
     <div className='result-content'>
