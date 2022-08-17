@@ -59,7 +59,7 @@ export default function Result({ query, faces, attributes, sort, refreshSearch, 
         method: 'post',
         url: deepMode ? mongoUrl : mileUrl,
         headers: { 'Content-Type': 'application/json' },
-        data: deepMode ? query : JSON.stringify({ query, sort })
+        data: JSON.stringify({ query, sort })
       };
 
       axios(config)
