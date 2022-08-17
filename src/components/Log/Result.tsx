@@ -136,7 +136,12 @@ export default function Result({ query, faces, attributes, refreshSearch, setQue
                               tracker: () => (
                                 <Tooltip key={index} title='find by tracker id'>
                                   <TableCell key={index} onClick={() => {
-                                    setQuery(`tracker = ${value}`);
+                                    if (deepMode) {
+                                      setQuery(`{"tracker": "${value}"}`);
+                                    }
+                                    else {
+                                      setQuery(`tracker = ${value}`);
+                                    }
                                   }} align='left' style={{ ...isError, width: '280px', cursor: 'pointer' }}>{value}</TableCell>
                                 </Tooltip>
                               )
