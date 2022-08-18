@@ -29,15 +29,51 @@ function App() {
   const fillFilters = (filter: string): void => {
     const params = new URLSearchParams(filter);
     if (params.get('f')) setFaces(`${params.get('f')}`);
+    if (params.get('a')) setAttributes(`${params.get('a')}`);
+    if (params.get('s')) setSort(`${params.get('s')}`);
     if (params.get('q')) {
       const q = `${params.get('q')}`;
       setSearch(q.replace(/:-:/g, ' = '));
     }
-    if (params.get('a')) setAttributes(`${params.get('a')}`);
     if (params.get('m')) {
       const isDeepMode = params.get('m')?.toLocaleLowerCase() === 'd';
       setDeepMode(isDeepMode);
     }
+  };
+
+  const setFilters = () => {
+    if (search.length === 0) {
+      setToastType('error');
+      setToastText('empty query');
+      setToast(true);
+
+      return;
+    }
+
+    const filter = search.replace(/ = /g, ':-:').replace(/ /g, '%20');
+    const urlQuery = `?q=${filter}&f=${faces}&a=${attributes}&s=${sort}`;
+    if (deepMode)`${urlQuery}&m=d`;
+    const base = window.location.href.split('?')[0];
+    const setFilter: AxiosRequestConfig = {
+      method: 'post',
+      url: 'https://api-usa.saas-solinftec.com/hades-api/filter',
+      headers: { 'Content-Type': 'application/json' },
+      data: JSON.stringify({ filter: `${urlQuery}` })
+    };
+
+    axios(setFilter)
+      .then((it: AxiosResponse): void => {
+        const url = `${base}?hf=${it.data}`;
+        navigator.clipboard.writeText(url);
+        setToastType('success');
+        setToastText('link copied!');
+        setToast(true);
+      })
+      .catch((e: any): void => {
+        const url = `${base}${urlQuery}`;
+        navigator.clipboard.writeText(url);
+        console.log(e);
+      });
   }
 
   useEffect(() => {
@@ -103,42 +139,7 @@ function App() {
             <IconButton
               color='primary'
               aria-label='share'
-              onClick={() => {
-
-                if (search.length === 0) {
-                  setToastType('error');
-                  setToastText('empty query');
-                  setToast(true);
-
-                  return;
-                }
-
-                let filter = search.replace(/ = /g, ':-:').replace(/ /g, '%20');
-                if (deepMode) {
-                  filter = `${filter}&m=d`;
-                }
-                const base = window.location.href.split('?')[0];
-                const setFilter: AxiosRequestConfig = {
-                  method: 'post',
-                  url: 'https://api-usa.saas-solinftec.com/hades-api/filter',
-                  headers: { 'Content-Type': 'application/json' },
-                  data: JSON.stringify({ filter: `?q=${filter}` })
-                };
-
-                axios(setFilter)
-                  .then((it: AxiosResponse): void => {
-                    const url = `${base}?hf=${it.data}`;
-                    navigator.clipboard.writeText(url);
-                    setToastType('success');
-                    setToastText('link copied!');
-                    setToast(true);
-                  })
-                  .catch((e: any): void => {
-                    const url = `${base}?q=${filter}`;
-                    navigator.clipboard.writeText(url);
-                    console.log(e);
-                  });
-              }}>
+              onClick={setFilters}>
               <Share />
             </IconButton>
           </div>
