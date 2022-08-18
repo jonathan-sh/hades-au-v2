@@ -51,8 +51,8 @@ function App() {
     }
 
     const filter = search.replace(/ = /g, ':-:').replace(/ /g, '%20');
-    const urlQuery = `?q=${filter}&f=${faces}&a=${attributes}&s=${sort}`;
-    if (deepMode)`${urlQuery}&m=d`;
+    let urlQuery = `?q=${filter}&f=${faces}&a=${attributes}&s=${sort}`;
+    if (deepMode) urlQuery = `${urlQuery}&m=d`;
     const base = window.location.href.split('?')[0];
     const setFilter: AxiosRequestConfig = {
       method: 'post',
