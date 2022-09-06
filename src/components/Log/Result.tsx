@@ -14,6 +14,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
 import './style.css';
 import Toast from '../Toast';
+import JsonView from '../JsonView';
 export interface HadesResult {
   [key: string]: string
 }
@@ -112,6 +113,13 @@ export default function Result({ query, faces, attributes, sort, refreshSearch, 
                         </TableCell>
                       ))
                   }
+
+                  <TableCell
+                    key={'index'}
+                    align='left'
+                    style={{ fontWeight: 'bold', color: 'rgb(1, 255, 112' }}> FULL
+                  </TableCell>
+
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -155,6 +163,10 @@ export default function Result({ query, faces, attributes, sort, refreshSearch, 
                             return (<TableCell key={index} style={isError} align='left' > {value.toLowerCase()} </TableCell>)
                           })
                       }
+
+                      <TableCell key={index} align='left' >
+                        <JsonView source={result} ></JsonView>
+                      </TableCell>
                     </TableRow>
                   ))}
               </TableBody>
